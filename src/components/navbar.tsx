@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import LoginPage from '../pages/login';
 
 const Navbar: React.FC = () => {
-
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLoginClick = () => {
     setShowLoginModal(true);
@@ -11,40 +12,65 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-    <nav className="flex items-center justify-between flex-wrap bg-teal-500 p-6">
-      <div className="flex items-center flex-shrink-0 text-white mr-6">
-        <span className="font-semibold text-xl tracking-tight">MovieShelf</span>
-      </div>
-      <div className="block lg:hidden">
-        <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
-          <svg className="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v15z"/></svg>
-        </button>
-      </div>
-      <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
-        <div className="text-sm lg:flex-grow">
-          <a href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-            Movies
-          </a>
-          <a href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-            What's Trending
-          </a>
+    <nav className="bg-white p-4 flex justify-between items-center lg:justify-start lg:space-x-10 shadow-lg">
+        <div className="flex justify-start lg:w-0 lg:flex-1">
+          <Link to="/" className="text-lg font-medium text-gray-900">
+            MovieShelf
+          </Link>
         </div>
-        <div>
-          <button onClick={handleLoginClick} className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+        <div className="-mr-2 -my-2 lg:hidden">
+          <button onClick={() => setIsMenuOpen(true)} className="btn btn-primary">
+            Menu
+          </button>
+        </div>
+        <div className="hidden lg:flex lg:space-x-10 items-center">
+          <Link to="/my-movie-shelf" className="text-base font-medium text-gray-500 hover:text-gray-900">
+            My Movie Shelf
+          </Link>
+          <button onClick={handleLoginClick} className="btn btn-primary">
             Login
           </button>
         </div>
-      </div>
-    </nav>
-    {showLoginModal && (
-  <div className="modal fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-    <div className="bg-black opacity-50 absolute top-0 left-0 w-full h-full"></div>
-    <div className="bg-white p-5 rounded shadow-lg max-w-sm max-h-full w-full relative">
-      <button onClick={() => setShowLoginModal(false)} className="float-right">Close</button>
-      <LoginPage />
-    </div>
-  </div>
-)}
+      </nav>
+      {isMenuOpen && (
+        <div className="absolute top-0 inset-x-0 p-2 transition transform origin-top-right lg:hidden">
+          <div className="rounded-lg shadow-lg">
+            <div className="rounded-lg shadow-xs bg-white divide-y-2 divide-gray-50">
+              <div className="pt-5 pb-6 px-5 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Link to="/" className="text-lg font-medium text-gray-900">
+                      Logo
+                    </Link>
+                  </div>
+                  <div className="-mr-2">
+                    <button onClick={() => setIsMenuOpen(false)} className="btn btn-error">
+                      Close
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <Link to="/about" className="block w-full px-5 py-3 text-center font-medium text-gray-500 bg-gray-100 hover:bg-gray-200">
+                    About
+                  </Link>
+                  <button onClick={handleLoginClick} className="btn btn-primary w-full mt-5">
+                    Login
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showLoginModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-black opacity-50 absolute inset-0"></div>
+          <div className="p-5 bg-white rounded-lg shadow-lg max-w-sm max-h-full w-full relative">
+            <button onClick={() => setShowLoginModal(false)} className="btn btn-error absolute top-2 right-2">Close</button>
+            <LoginPage />
+          </div>
+        </div>
+      )}
     </>
   );
 };
