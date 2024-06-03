@@ -1,37 +1,41 @@
-import React, { useState, FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import axios from 'axios';
+import React, { useState, FormEvent, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { decodeToken } from '../utils/DecodeJwt';
+import { UserContext } from '../context/UserContext';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (event: FormEvent) => {
+  const { setUsername: setUserNameInContext, setSub } = useContext(UserContext);
+
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:3000/auth/signin', {
+        username,
+        password,
+        email
+      });
 
-    if (!username && !email) {
-      alert('Please enter either a username or an email');
-      return;
+      const { data } = response;
+      document.cookie = "access_token=" +  data.access_token + "; path=/";  
+
+      const userData = decodeToken(data.access_token);
+
+      if (userData) {
+        setUserNameInContext(userData.username);
+        setSub(userData.sub);
+      }
+
+      // Redirect to home page
+      navigate('/');
+    } catch (error) {
+      console.error('Error:', error);
     }
-
-    fetch('http://localhost:3000/auth/signin', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-        email: email
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Handle response data here
-    })
-    .catch(error => {
-      // Handle error here
-    });
   };
 
   const handleCreateAccount = () => {

@@ -1,13 +1,13 @@
 import React from 'react';
 import Navbar from '../components/navbar';
-import ListGroup from '../components/ListGroup';
-import Message from '../components/Message';
+import {UserContext} from '../context/UserContext'; // adjust the import path to where your UserContext is located
 
 const HomePage: React.FC = () => {
 
+    const user = React.useContext(UserContext);
+    console.log(user)
     return (
         <div>
-            <Navbar />
             <div className="flex justify-center h-screen">
                 <div className="mt-4">
                     <input
@@ -17,6 +17,10 @@ const HomePage: React.FC = () => {
                     />
                 </div>
             </div>
+
+           <div>Welcome, {user?.username}!</div>;
+           <div>Welcome, {user?.sub}!</div>;
+
         </div>
     );
 };
