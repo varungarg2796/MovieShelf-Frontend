@@ -1,37 +1,16 @@
-import { useState, useContext, useRef, useEffect } from 'react';
+import { useState, useContext  } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import LoginPage from '../pages/login';
 import { UserContext } from '../context/UserContext'; // import UserContext
 import 'daisyui/dist/full.css'; // import daisyUI for styling
 
 const Navbar: React.FC = () => {
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false); // state for dropdown
   const navigate = useNavigate()
-  const dropdownRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    function handleClickOutside(event: { target: any; }) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-      }
-    }
-
-    if (dropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-  
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownOpen]);
-
   const user = useContext(UserContext); // access user data
 
   const handleLoginClick = () => {
-    setShowLoginModal(true);
+    navigate('/login'); 
   };
 
   const handleLogout = () => {
@@ -62,27 +41,24 @@ const Navbar: React.FC = () => {
           <Link to="/my-movie-shelf" className="text-base font-medium text-gray-500 hover:text-gray-900">
             My Movie Shelf
           </Link>
-          {user ? (
-            <div className="relative inline-block text-left">
-              <button ref={dropdownRef} onClick={() => setDropdownOpen(!dropdownOpen)} type="button" className="inline-flex justify-center w-full rounded-md shadow-lg px-4 py-2 bg-blue-600 text-sm font-medium text-black hover:text-gray-700 focus:outline-none" id="options-menu" aria-haspopup="true" aria-expanded="true">
-                Hey, {user?.username}
-                <svg className="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 6a4 4 0 100 8 4 4 0 000-8zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                </svg>
-              </button>
-              {dropdownOpen && (
-                <div className="origin-top-right absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+          {user?.username ? (
+          <div className="relative inline-block text-left">
+            <button onClick={() => setDropdownOpen(!dropdownOpen)} type="button" className="inline-flex justify-center w-full rounded-md shadow-lg px-4 py-2 bg-blue-600 text-sm font-medium text-black hover:text-gray-700 focus:outline-none" id="options-menu" aria-haspopup="true" aria-expanded="true">
+              Hey, {user?.username}
+            </button>
+            {dropdownOpen && (
+              <div className="origin-top-right absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                 <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                   <button onClick={handleLogout} className="w-full block px-4 py-2 text-sm text-white bg-red-500 hover:bg-red-700 rounded" role="menuitem">Logout</button>
                 </div>
               </div>
-              )}
-            </div>
-          ) : (
-            <button onClick={handleLoginClick} className="btn btn-primary">
-              Login
-            </button> // render login button if user is not logged in
-          )}
+            )}
+          </div>
+        ) : (
+          <button onClick={handleLoginClick} className="btn btn-primary">
+            Login
+          </button>
+        )}
         </div>
       </nav>
       {isMenuOpen && (
@@ -106,9 +82,9 @@ const Navbar: React.FC = () => {
             <Link to="/about" className="block w-full px-5 py-3 text-center font-medium text-gray-500 bg-gray-100 hover:bg-gray-200">
               About
             </Link>
-            {user ? (
+            {user?.username ? (
               <div className="relative inline-block text-left">
-                <button ref={dropdownRef} onClick={() => setDropdownOpen(!dropdownOpen)} type="button" className="inline-flex justify-center w-full rounded-md shadow-lg px-4 py-2 bg-blue-600 text-sm font-medium text-black hover:text-gray-700 focus:outline-none" id="options-menu" aria-haspopup="true" aria-expanded="true">
+                <button onClick={() => setDropdownOpen(!dropdownOpen)} type="button" className="inline-flex justify-center w-full rounded-md shadow-lg px-4 py-2 bg-blue-600 text-sm font-medium text-black hover:text-gray-700 focus:outline-none" id="options-menu" aria-haspopup="true" aria-expanded="true">
                   Hey, {user?.username}
                   <svg className="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 6a4 4 0 100 8 4 4 0 000-8zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
@@ -133,15 +109,6 @@ const Navbar: React.FC = () => {
     </div>
   </div>
 )}
-      {showLoginModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-black opacity-50 absolute inset-0"></div>
-          <div className="p-5 bg-white rounded-lg shadow-lg max-w-sm max-h-full w-full relative">
-            <button onClick={() => setShowLoginModal(false)} className="btn btn-error absolute top-2 right-2">Close</button>
-            <LoginPage />
-          </div>
-        </div>
-      )}
     </>
   );
 };
