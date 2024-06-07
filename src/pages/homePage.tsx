@@ -95,12 +95,7 @@ const HomePage: React.FC = () => {
             {modalIsOpen && (
                 <div className="fixed inset-0 flex items-center justify-center z-50">
                     <div className="modal modal-open">
-                        <div className="modal-box">
-                            <MovieDetailCard movie={selectedMovie as Movie} />
-                            <div className="modal-action">
-                                <button onClick={closeModal} className="btn">Close</button>
-                            </div>
-                        </div>
+                            <MovieDetailCard movie={selectedMovie as Movie }closeModal={closeModal} />
                     </div>
                 </div>
             )}

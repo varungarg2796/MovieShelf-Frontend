@@ -1,0 +1,12 @@
+.movie-card img {
+  height: 300px; /* adjust this value as needed */
+  object-fit: cover; /* this will ensure the image covers the entire space without distortion */
+}
+
+.movie-card {
+  transition: transform 0.3s ease-in-out;
+}
+
+.movie-card:hover {
+  transform: scale(1.1);
+}

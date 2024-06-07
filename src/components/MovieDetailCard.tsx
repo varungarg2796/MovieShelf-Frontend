@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 import Cookies from 'js-cookie';
 
@@ -47,6 +48,7 @@ interface MovieDetail {
 interface MovieDetailCardProps {
     // Define the props for your component here
     movie: Movie;
+    closeModal: () => void;
 }
 
 const MovieDetailCard: React.FC<MovieDetailCardProps> = (props) => {
@@ -54,6 +56,7 @@ const MovieDetailCard: React.FC<MovieDetailCardProps> = (props) => {
 
     const accessToken = Cookies.get('access_token');
     const [movieData, setMovieData] = useState<MovieDetail | null>(null);
+
 
     useEffect(() => {
         const fetchMovieDetails = async (title: string) => {
@@ -70,10 +73,51 @@ const MovieDetailCard: React.FC<MovieDetailCardProps> = (props) => {
             }
         }
 
+    const postMovieData = async (movie: MovieDetail) => {
+        movie = convertToMovie(movie)
+        const response = await fetch('http://localhost:3000/movies', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(movie)
+        });
+      
+        if (!response.ok) {
+          throw new Error('Failed to post movie data');
+        }
+      };
+
 
         fetchMovieDetails(props.movie.Title)
-            .then((movie: MovieDetail) => setMovieData(movie));
+        .then((movie: MovieDetail) => {
+          setMovieData(movie);
+          // Check for data and accessToken before posting
+          if (movie && accessToken) {
+            postMovieData(movie);
+          }
+        });
     }, [accessToken, props.movie.Title]);
+
+    const addToWatchlist = async (imdbId: string) => {
+        const response = await fetch('http://localhost:3000/watchlist', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ imdbid: imdbId })
+        });
+      
+        if (response.ok) {
+          toast.success('Added to watchlist successfully!');
+          props.closeModal();
+        } else {
+          toast.error('Failed to add to watchlist. Please try again.');
+          props.closeModal();
+        }
+      };
     
 
     return (
@@ -94,9 +138,40 @@ const MovieDetailCard: React.FC<MovieDetailCardProps> = (props) => {
               <div className="badge badge-outline">Genre: {movieData?.Genre}</div> 
               <div className="badge badge-outline">Director: {movieData?.Director}</div>
             </div>
+            <div className="flex justify-between mt-4">
+                <button onClick={() => addToWatchlist(movieData?.imdbID ?? '')} className="btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Add to your Watchlist!
+                </button>
+                <button onClick={props.closeModal} className="btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    Close
+                </button>
+            </div>
           </div>
         </div>
       );
 };
 
+const convertToMovie = (movieData: MovieDetail): any => ({
+    imdbid: movieData.imdbID,
+    title: movieData.Title,
+    year: parseInt(movieData.Year),
+    rated: movieData.Rated,
+    released: new Date(movieData.Released),
+    runtime: parseInt(movieData.Runtime.split(' ')[0]),
+    genre: movieData.Genre,
+    director: movieData.Director,
+    writers: movieData.Writer,
+    actors: movieData.Actors,
+    plot: movieData.Plot,
+    languages: movieData.Language,
+    country: movieData.Country,
+    awards: movieData.Awards,
+    poster: movieData.Poster,
+    metascore: movieData.Metascore === 'N/A' ? null : parseInt(movieData.Metascore),
+    imdbrating: parseFloat(movieData.imdbRating),
+    imdbvotes: parseInt(movieData.imdbVotes.replace(',', '')),
+    box_office: movieData.BoxOffice,
+    production: movieData.Production,
+  });
+  
 export default MovieDetailCard;
