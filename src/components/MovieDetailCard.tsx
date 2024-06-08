@@ -121,7 +121,13 @@ const MovieDetailCard: React.FC<MovieDetailCardProps> = (props) => {
     
 
     return (
-        <div className="card w-96 bg-base-100 shadow-xl">
+        <div onClick={props.closeModal} className="fixed inset-0 flex items-center justify-center">
+        <div onClick={(e) => e.stopPropagation()} className="card  w-96 h-90 bg-base-100 shadow-xl relative">
+
+        <button onClick={props.closeModal} className="btn btn-square absolute top-0 right-0 m-1">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>    
+       
           <figure>
             <img src={movieData?.Poster} alt={movieData?.Title} />
           </figure>
@@ -139,14 +145,15 @@ const MovieDetailCard: React.FC<MovieDetailCardProps> = (props) => {
               <div className="badge badge-outline">Director: {movieData?.Director}</div>
             </div>
             <div className="flex justify-between mt-4">
-                <button onClick={() => addToWatchlist(movieData?.imdbID ?? '')} className="btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                <button onClick={() => addToWatchlist(movieData?.imdbID ?? '')} className="btn btn-active">
                     Add to your Watchlist!
                 </button>
-                <button onClick={props.closeModal} className="btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                    Close
+                <button className="btn btn-success">
+                    Mark as Watched!
                 </button>
             </div>
           </div>
+        </div>
         </div>
       );
 };

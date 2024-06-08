@@ -3,6 +3,7 @@ import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import './WatchList.css';
 import Cookies from 'js-cookie';
+import { set } from 'lodash';
 
 
 const responsive = {
@@ -57,6 +58,8 @@ const WatchList: React.FC = () => {
     const [averageRuntime, setAverageRuntime] = useState(0);
     const [averageImdbRating, setAverageImdbRating] = useState(0);
     const [totalWatchlistDuration, setTotalWatchlistDuration] = useState(0);
+    const [totalWatchListedMovies, setTotalWatchListedMovies] = useState(0);
+
 
     const currentDate = new Date();
 
@@ -74,6 +77,7 @@ const WatchList: React.FC = () => {
         setTotalWatchlistDuration(parseFloat(totalRuntime.toFixed(1)));
         setAverageRuntime(Number((totalRuntime / items.length).toFixed(1)));
         setAverageImdbRating(Number((totalImdbRating / items.length).toFixed(1)));
+        setTotalWatchListedMovies(items.length);
     };
 
     const handleDelete = (item: any) => {
@@ -120,6 +124,7 @@ const WatchList: React.FC = () => {
                 setTotalWatchlistDuration(parseFloat(totalRuntime.toFixed(1)));
                 setAverageRuntime(Number((totalRuntime / data.length).toFixed(1)));
                 setAverageImdbRating(Number((totalImdbRating / data.length).toFixed(1)));
+                setTotalWatchListedMovies(data.length);
             })
             .catch(error => console.error('Error:', error));
     }, []);
@@ -165,6 +170,7 @@ const WatchList: React.FC = () => {
             <div className="flex flex-col items-center bg-gray-100">
                 <div className="p-6 bg-white rounded-xl shadow-md flex items-center space-x-4">
                     <div>
+                        <h2 className="text-xl font-normal text-gray-900">Total Movies in Watchlist: <span className="font-normal text-blue-600">{totalWatchListedMovies}</span></h2>
                         <h2 className="text-xl font-normal text-gray-900">Total Watchlist duration: <span className="font-normal text-blue-600">{totalWatchlistDuration} minutes</span> or  <span className="font-normal text-blue-600"> {Number(totalWatchlistDuration / 60).toFixed(1)} hours </span></h2>
                         <h2 className="text-xl font-normal text-gray-900">It will take your ≈ <span className="font-normal text-blue-600">{Number(totalWatchlistDuration / (60 * 24)).toFixed(1)} days</span> to watch it all!</h2>
                     </div>

@@ -7,6 +7,8 @@ import SignupPage from './pages/Signup';
 import Navbar from './components/navbar';
 import { UserProvider } from './context/UserContext';
 import WatchList from './pages/WatchList';
+import WatchHistory from './pages/WatchHistory';
+import Recommendations from './pages/Recommendations';
 
 function App() {
   return (
@@ -17,7 +19,9 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/my-movie-shelf" element={<WatchList />} />
+          <Route path="/my-watch-list" element={<WatchList />} />
+          <Route path="/my-watch-history" element={<WatchHistory />} />
+          <Route path="/recommendations" element={<Recommendations />} />
         </Routes>
       </Router>
     </UserProvider>
