@@ -118,6 +118,31 @@ const MovieDetailCard: React.FC<MovieDetailCardProps> = (props) => {
           props.closeModal();
         }
       };
+
+      const markAsWatched = async () => {
+        const response = await fetch('http://localhost:3000/watch-history', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                watchHistoryData: {
+                    imdbid: movieData?.imdbID,
+                }
+            })
+        }
+    
+    );
+    
+    if (response.ok) {
+        toast.success('Added to watch history successfully!');
+        props.closeModal();
+      } else {
+        toast.error('Failed to add to watchlist. Please try again.');
+        props.closeModal();
+      }
+    }
     
 
     return (
@@ -148,7 +173,7 @@ const MovieDetailCard: React.FC<MovieDetailCardProps> = (props) => {
                 <button onClick={() => addToWatchlist(movieData?.imdbID ?? '')} className="btn btn-active">
                     Add to your Watchlist!
                 </button>
-                <button className="btn btn-success">
+                <button onClick={markAsWatched} className="btn btn-success">
                     Mark as Watched!
                 </button>
             </div>
