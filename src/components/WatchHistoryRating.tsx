@@ -12,11 +12,19 @@ interface WatchHistoryRatingProps {
 const WatchHistoryRating: React.FC<WatchHistoryRatingProps> = (props) => {
     const [watchHistory, setWatchHistory] = useState<WatchHistoryType>(props.watchHistory);
     const accessToken = Cookies.get('access_token');
+    const [remainingCharsNotes, setRemainingCharsNotes] = useState(200);
+    const [remainingCharsReview, setRemainingCharsReview] = useState(1000);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target as HTMLInputElement;
         const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
 
+        if (e.target.name === 'notes') {
+            setRemainingCharsNotes(200 - e.target.value.length);
+        }
+        if (e.target.name === 'userRating.review') {
+            setRemainingCharsReview(1000 - e.target.value.length);
+        }
         if (type === 'checkbox') {
             setWatchHistory(prevState => ({
                 ...prevState,
@@ -105,6 +113,7 @@ const WatchHistoryRating: React.FC<WatchHistoryRatingProps> = (props) => {
                         type="date"
                         name="watch_date"
                         value={watchHistory.watch_date ? new Date(watchHistory.watch_date).toISOString().split('T')[0] : ''}
+                        max={new Date().toISOString().split("T")[0]} // Set max to today's date
                         onChange={handleChange}
                         className="input input-bordered"
                     />
@@ -165,48 +174,41 @@ const WatchHistoryRating: React.FC<WatchHistoryRatingProps> = (props) => {
                     />
 
                     <label className="label mt-2">
-                        <span className="label-text">Notes</span>
+                        <span className="label-text">Notes ({remainingCharsNotes} chars left)</span>
                     </label>
                     <textarea
                         name="notes"
                         value={watchHistory.notes || ''}
                         onChange={handleChange}
+                        maxLength={200}
                         className="textarea textarea-bordered"
                     ></textarea>
 
                     <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-                        <h3 className="font-semibold">User Rating</h3>
+                        <h3 className="font-semibold">Your Rating</h3>
                         <label className="label mt-2">
-                            <span className="label-text">Rating Value</span>
+                            <span className="label-text">Rating</span>
                         </label>
                         <input
                             type="number"
                             name="userRating.rating_value"
                             value={watchHistory.userRating.rating_value || ''}
                             onChange={handleChange}
+                            max= {5}
+                            min = {1}
                             className="input input-bordered"
                         />
 
                         <label className="label mt-2">
-                            <span className="label-text">Review</span>
+                            <span className="label-text">Review ({remainingCharsReview} chars lef)</span>
                         </label>
                         <textarea
                             name="userRating.review"
                             value={watchHistory.userRating.review || ''}
                             onChange={handleChange}
+                            maxLength={1000}
                             className="textarea textarea-bordered"
                         ></textarea>
-
-                        <label className="label mt-2">
-                            <span className="label-text">Recommended</span>
-                        </label>
-                        <input
-                            type="checkbox"
-                            name="userRating.recommended"
-                            checked={watchHistory.userRating.recommended || false}
-                            onChange={handleChange}
-                            className="checkbox"
-                        />
 
                         <label className="label mt-2">
                             <span className="label-text">Tags</span>

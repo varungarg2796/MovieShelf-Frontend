@@ -82,15 +82,17 @@ const WatchHistory = () => {
                 customTransition="all .5s"
                 transitionDuration={500}
                 containerClass="carousel-container movie-carousel"
-                removeArrowOnDeviceType={["tablet"]}
+                removeArrowOnDeviceType={[""]}
                 dotListClass="custom-dot-list-style"
                 itemClass="carousel-item-padding-30-px"
             >
                 {items.map((item: WatchHistoryType) => (
-                    <div onClick={() => setSelectedItem(item)} key={item.watch_history_id} className="movie-card flex flex-col items-center justify-center">
-                        <img src={item.imdbid.poster} alt={item.imdbid.title} />
-                        <div className="flex justify-center items-center text-center">
-                            <span className="badge">{item.imdbid.title}</span>
+                    <div onClick={() => setSelectedItem(item)} key={item.watch_history_id} className="movie-card lg:card-side bg-base-100 shadow-2xl transform hover:scale-105 transition-transform duration-200 ease-in-out p-4 m-4 max-w-2xl mx-auto">
+                        <figure className="w-3/3">
+                            <img src={item.imdbid.poster} alt={item.imdbid.title} className='self-center' />
+                        </figure>
+                        <div className="flex justify-center items-center text-center p-2">
+                            <span className="badge inline-block">{item.imdbid.title}</span>
                         </div>
                         <p>
                             Watched on <span className="font-semibold ml-1">
@@ -111,15 +113,15 @@ const WatchHistory = () => {
             </Carousel>
 
 
-            {selectedItem && (
-                <div className="card lg:card-side bg-base-100 shadow-xl p-4 m-4 max-w-2xl mx-auto">
+            {selectedItem ? (
+                <div className="card lg:card-side bg-base-100 shadow-2xl p-4 m-4 max-w-2xl mx-auto"style={{background: 'linear-gradient(180deg, #fff 0%, #f9f9f9 100%)'}}>
                     <button onClick={handleEditClick} className="absolute top-2 right-2 focus:outline-none">
                         <i className="fas fa-edit cursor-pointer"></i>
                     </button>
-                    <figure className="w-1/3">
+                    <figure className="w-3/3">
                         <img src={selectedItem.imdbid.poster} alt={selectedItem.imdbid.title} className="rounded-lg" />
                     </figure>
-                    <div className="card-body w-2/3">
+                    <div className="card-body w-3/3">
                         <h2 className="card-title text-lg font-bold mb-2">{selectedItem.imdbid.title}</h2>
                         <p className="text-sm mb-1 flex items-center">
                             <i className="fas fa-calendar-alt mr-2"></i>
@@ -168,6 +170,10 @@ const WatchHistory = () => {
                         </div>
                     </div>
                 </div>
+            ):(
+                <div className="flex justify-center items-center text-lg font-bold p-10">
+    Click on a movie to view/write your review
+</div>
             )}
 
             {isModalOpen && (
