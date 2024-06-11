@@ -33,9 +33,33 @@ const WatchHistory = () => {
     const [selectedItem, setSelectedItem] = useState<WatchHistoryType | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+
+
+    const handleWatchHistoryRemoveClick = () => {
+        setIsRemoveDialogOpen(true);
+    };
+
     const handleEditClick = () => {
         setIsModalOpen(true);
     };
+
+    const handleRemoveClick = async () => {
+        const response = await fetch(`http://localhost:3000/watch-history/${selectedItem?.watch_history_id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (!response.ok) {
+            // handle error
+            setIsRemoveDialogOpen(false);
+        }
+        setIsRemoveDialogOpen(false);
+        setSelectedItem(null);
+        setItems(items.filter((item: WatchHistoryType) => item.watch_history_id !== selectedItem?.watch_history_id));
+    }
 
     const handleModalClose = () => {
         setIsModalOpen(false);
@@ -49,10 +73,10 @@ const WatchHistory = () => {
         })
             .then(response => response.json())
             .then(data => {
-                console.log("initial",data)
-                console.log("initial",selectedItem)
+                console.log("initial", data)
+                console.log("initial", selectedItem)
                 setItems(data);
-                
+
                 console.log(data)
                 console.log(selectedItem)
             })
@@ -60,11 +84,11 @@ const WatchHistory = () => {
     }, [refreshKey]);
 
     useEffect(() => {
-        const updatedSelectedItem = items.find((item:WatchHistoryType) => item.watch_history_id === selectedItem?.watch_history_id);
-                if (updatedSelectedItem) {
-                    console.log("here")
-                    setSelectedItem(updatedSelectedItem);
-                }
+        const updatedSelectedItem = items.find((item: WatchHistoryType) => item.watch_history_id === selectedItem?.watch_history_id);
+        if (updatedSelectedItem) {
+            console.log("here")
+            setSelectedItem(updatedSelectedItem);
+        }
     }, [items]); // Only items here
 
     return (
@@ -86,7 +110,11 @@ const WatchHistory = () => {
                 dotListClass="custom-dot-list-style"
                 itemClass="carousel-item-padding-30-px"
             >
-                {items.map((item: WatchHistoryType) => (
+                {items.sort((a: WatchHistoryType, b: WatchHistoryType) => {
+                    const dateA = a.watch_date ? new Date(a.watch_date).getTime() : 0;
+                    const dateB = b.watch_date ? new Date(b.watch_date).getTime() : 0;
+                    return dateB - dateA;
+                }).map((item: WatchHistoryType) => (
                     <div onClick={() => setSelectedItem(item)} key={item.watch_history_id} className="movie-card lg:card-side bg-base-100 shadow-2xl transform hover:scale-105 transition-transform duration-200 ease-in-out p-4 m-4 max-w-2xl mx-auto">
                         <figure className="w-3/3">
                             <img src={item.imdbid.poster} alt={item.imdbid.title} className='self-center' />
@@ -114,7 +142,7 @@ const WatchHistory = () => {
 
 
             {selectedItem ? (
-                <div className="card lg:card-side bg-base-100 shadow-2xl p-4 m-4 max-w-2xl mx-auto"style={{background: 'linear-gradient(180deg, #fff 0%, #f9f9f9 100%)'}}>
+                <div className="card lg:card-side bg-base-100 shadow-2xl p-4 m-4 max-w-2xl mx-auto" style={{ background: 'linear-gradient(180deg, #fff 0%, #f9f9f9 100%)' }}>
                     <button onClick={handleEditClick} className="absolute top-2 right-2 focus:outline-none">
                         <i className="fas fa-edit cursor-pointer"></i>
                     </button>
@@ -168,12 +196,16 @@ const WatchHistory = () => {
                                 Tags: <span className="font-semibold ml-1">{selectedItem.userRating.tags || 'N/A'}</span>.
                             </p>
                         </div>
+                        <button onClick={handleWatchHistoryRemoveClick} className="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Remove from Watch History
+                        </button>
                     </div>
+
                 </div>
-            ):(
+            ) : (
                 <div className="flex justify-center items-center text-lg font-bold p-10">
-    Click on a movie to view/write your review
-</div>
+                    Click on a movie to view/write your review
+                </div>
             )}
 
             {isModalOpen && (
@@ -186,6 +218,21 @@ const WatchHistory = () => {
                 </div>
             )}
 
+            {isRemoveDialogOpen && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="absolute inset-0 bg-gray-500 opacity-50"></div>
+                    <div role="alert" className="alert relative w-1/2 z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info shrink-0 w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Are you sure you want to delete this item from your watch history?</span>
+                        <div>
+                            <button className="btn btn-sm" onClick={handleRemoveClick}>Yes</button>
+                            <button className="btn btn-sm btn-primary" onClick={() => setIsRemoveDialogOpen(false)}>No</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
 
     );
