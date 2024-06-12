@@ -9,6 +9,7 @@ import { UserProvider } from './context/UserContext';
 import WatchList from './pages/WatchList';
 import WatchHistory from './pages/WatchHistory';
 import Recommendations from './pages/Recommendations';
+import AuthGuard from './guards/AuthGuard';
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/my-watch-list" element={<WatchList />} />
           <Route path="/my-watch-history" element={<WatchHistory />} />
-          <Route path="/recommendations" element={<Recommendations />} />
+            <Route path="/recommendations" element={<AuthGuard><Recommendations /> </AuthGuard>} />
         </Routes>
       </Router>
     </UserProvider>

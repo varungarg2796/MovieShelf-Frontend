@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import '@fortawesome/fontawesome-free/css/all.css';
 import WatchHistoryRating from '../components/WatchHistoryRating';
 import type { WatchHistoryType } from '../types/WatchHistory.types';
+import { useUser } from '../context/UserContext';
 
 const responsive = {
     desktop: {
@@ -34,7 +35,7 @@ const WatchHistory = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
-
+    const {username} = useUser();
 
     const handleWatchHistoryRemoveClick = () => {
         setIsRemoveDialogOpen(true);
@@ -84,12 +85,14 @@ const WatchHistory = () => {
     }, [refreshKey]);
 
     useEffect(() => {
-        const updatedSelectedItem = items.find((item: WatchHistoryType) => item.watch_history_id === selectedItem?.watch_history_id);
-        if (updatedSelectedItem) {
-            console.log("here")
-            setSelectedItem(updatedSelectedItem);
+        if(items && Array.isArray(items)) {
+            const updatedSelectedItem = items.find((item: WatchHistoryType) => item.watch_history_id === selectedItem?.watch_history_id);
+            if (updatedSelectedItem) {
+                console.log("here")
+                setSelectedItem(updatedSelectedItem);
+            }
         }
-    }, [items]); // Only items here
+    }, [items]);
 
     return (
         <>
@@ -110,7 +113,7 @@ const WatchHistory = () => {
                 dotListClass="custom-dot-list-style"
                 itemClass="carousel-item-padding-30-px"
             >
-                {items.sort((a: WatchHistoryType, b: WatchHistoryType) => {
+                {items && Array.isArray(items) && items.sort((a: WatchHistoryType, b: WatchHistoryType) => {
                     const dateA = a.watch_date ? new Date(a.watch_date).getTime() : 0;
                     const dateB = b.watch_date ? new Date(b.watch_date).getTime() : 0;
                     return dateB - dateA;
@@ -202,11 +205,14 @@ const WatchHistory = () => {
                     </div>
 
                 </div>
-            ) : (
-                <div className="flex justify-center items-center text-lg font-bold p-10">
-                    Click on a movie to view/write your review
-                </div>
-            )}
+                ) : (
+                    username ? (<div className="flex justify-center items-center text-lg font-bold p-10">
+                    Hello {username}, click on a movie to view/write your review.
+                </div>) : (<div className="flex justify-center items-center text-lg font-bold p-10">
+                Please login to start adding to your watch history!
+            </div>)
+            
+                )}
 
             {isModalOpen && (
 
