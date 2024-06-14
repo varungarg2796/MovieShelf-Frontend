@@ -2,6 +2,7 @@ import { useState, useContext, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext'; // import UserContext
 import 'daisyui/dist/full.css'; // import daisyUI for styling
+import useOnClickOutside from './useOnClickOutside';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,6 +10,9 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const user = useContext(UserContext); // access user data
   const dropdownRef = useRef<HTMLDivElement>(null); // reference for the dropdown
+  const ref = useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(ref, () => setIsMenuOpen(false));
 
   const handleLoginClick = () => {
     navigate('/login'); 
@@ -54,7 +58,7 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
         <div className="-mr-2 -my-2 lg:hidden">
-          <button onClick={() => setIsMenuOpen(true)} className="btn btn-primary">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="btn btn-primary">
             Menu
           </button>
         </div>
@@ -94,22 +98,10 @@ const Navbar: React.FC = () => {
         </div>
       </nav>
       {isMenuOpen && (
-        <nav className="sticky z-50 absolute top-0 inset-x-0 p-2 transition transform origin-top-right lg:hidden">
+        <nav ref={ref} className="sticky z-50 absolute top-0 inset-x-0 p-2 transition transform origin-top-right lg:hidden">
           <div className="rounded-lg shadow-lg">
             <div className="rounded-lg shadow-xs bg-white divide-y-2 divide-gray-50">
               <div className="pt-5 pb-6 px-5 space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Link to="/" className="text-lg font-medium text-gray-900" onClick={() => setIsMenuOpen(false)}>
-                      MovieShelf
-                    </Link>
-                  </div>
-                  <div className="-mr-2">
-                    <button onClick={() => setIsMenuOpen(false)} className="btn btn-error">
-                      Close
-                    </button>
-                  </div>
-                </div>
                 <div>
                   <Link to="/about" className="block w-full px-5 py-3 text-center font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg" onClick={() => setIsMenuOpen(false)}>
                     About
