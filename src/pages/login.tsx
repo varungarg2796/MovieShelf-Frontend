@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
       });
 
       const { data } = response;
-      document.cookie = "access_token=" +  data.access_token + "; path=/";  
+      document.cookie = "access_token=" + data.access_token + "; path=/";  
 
       const userData = decodeToken(data.access_token);
 
@@ -38,20 +38,28 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleCreateAccount = () => {
-    // Handle account creation logic here
-  };
-
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <button 
+            onClick={() => window.location.href='http://localhost:3000/auth/google'}
+            className="btn btn-outline btn-accent w-full flex items-center justify-center space-x-2 mb-4"
+          >
+              <img 
+                src="https://developers.google.com/identity/images/g-logo.png" 
+                alt="Google Logo" 
+                className="w-5 h-5"
+              />
+            <span>Sign in with Google</span>
+          </button>
+          <div className="divider">Or</div>
+          <h6 className="text-center text-2xl font-extrabold text-gray-900 mb-6">
             Sign in to your account
-          </h2>
+          </h6>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="username" className="sr-only">Username</label>
               <input id="username" name="username" type="text" required className="input input-bordered w-full" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
@@ -75,7 +83,7 @@ const LoginPage: React.FC = () => {
           <div>
             <p className="mt-2 text-center text-sm text-gray-600">
               Don't have an account? 
-              <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+              <Link to="/signup" className="font-medium text-primary hover:underline ml-1">
                 Register
               </Link>
             </p>
