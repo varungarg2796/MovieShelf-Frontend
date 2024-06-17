@@ -3,6 +3,8 @@ import { UserContext } from '../context/UserContext';
 import debounce from 'lodash.debounce';
 import Cookies from 'js-cookie';
 import MovieDetailCard from '../components/MovieDetailCard';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
 
 interface Movie {
     imdbID: string;
@@ -11,15 +13,39 @@ interface Movie {
     Plot: string;
     Year: string;
 }
+interface MovieResponse {
+    title: string;
+    poster: string;
+    year: string;
+}
 
 const HomePage: React.FC = () => {
     const user = React.useContext(UserContext);
     const [searchTerm, setSearchTerm] = useState('');
     const [movies, setMovies] = useState<Movie[]>([]);
+    const [popularMovies, setPopularMovies] = useState<MovieResponse[]>([]);
     const accessToken = Cookies.get('access_token');
     const [searchDropdownOpen, setSearchDropdownOpen] = useState(false);
     const [modalIsOpen, setIsOpen] = useState(false);
     const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+
+    const responsive = {
+        desktop: {
+            breakpoint: { max: 3000, min: 1024 },
+            items: 5,
+            slidesToSlide: 3, // optional, default to 1.
+        },
+        tablet: {
+            breakpoint: { max: 1024, min: 464 },
+            items: 2,
+            slidesToSlide: 2, // optional, default to 1.
+        },
+        mobile: {
+            breakpoint: { max: 464, min: 0 },
+            items: 1,
+            slidesToSlide: 1, // optional, default to 1.
+        },
+    };
 
     function openModal(movie: Movie) {
         setSelectedMovie(movie);
@@ -41,16 +67,30 @@ const HomePage: React.FC = () => {
             setMovies(data.Search);
             if (data.Search && data.Search.length > 0) {
                 setSearchDropdownOpen(true);
-                console.log(searchDropdownOpen)
             } else {
                 setSearchDropdownOpen(false);
-                console.log(searchDropdownOpen)
-
             }
         }, 1500),
         [] // dependencies array
     );
-
+    const fetchPopularMovies = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/movies`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch popular movies');
+            }
+            const data = await response.json();
+            console.log(data)
+            setPopularMovies(data);
+        } catch (error) {
+            console.error(error);
+            // Handle the error appropriately here, e.g., set an error state, show a notification, etc.
+        }
+    };
     useEffect(() => {
         return () => {
             searchMovies.cancel();
@@ -63,39 +103,75 @@ const HomePage: React.FC = () => {
         }
     }, [searchTerm, searchMovies]);
 
+    useEffect(() => {
+        fetchPopularMovies();
+    }, []);
+
     return (
-        <div>
-            <div className="relative">
-                <input
-                    type="text"
-                    className="input input-bordered w-full"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search for a movie..."
-                />
-                {searchDropdownOpen && (
-  <div className="absolute w-full mt-2">
-    <div className="card shadow-lg">
-      {movies.map((movie, index) => (
-        <div
-          key={index}
-          className="card-body flex items-center space-x-2 hover:bg-primary hover:text-white cursor-pointer"
-          onClick={() => openModal(movie)}
-        >
-          <h2 className="text-sm font-semibold">{movie.Title}</h2>
-          <h2 className="text-sm font-semibold">{movie.Year}</h2>
-          <img src={movie.Poster} alt={movie.Title} className="movie-poster w-16 h-16 object-cover" />                                
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+        <div className="p-4 min-h-screen bg-gray-100">
+            <div className="max-w-7xl mx-auto">
+                <p className="text-lg mb-4">
+                    Start your movie journal with Movie Shelf!
+                </p>
+                <div className="mb-8">
+                    <input
+                        type="text"
+                        className="input input-bordered w-full px-4 py-2 rounded-lg shadow focus:outline-none"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search for a movie..."
+                    />
+                    {searchDropdownOpen && (
+                        <div className="absolute w-full mt-2 bg-white rounded-lg shadow-lg z-10">
+                            {movies.map((movie, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center p-2 hover:bg-primary hover:text-white cursor-pointer rounded-lg transition-colors"
+                                    onClick={() => openModal(movie)}
+                                >
+                                    <img src={movie.Poster} alt={movie.Title} className="w-12 h-12 object-cover rounded-md" />
+                                    <div className="ml-4">
+                                        <h2 className="text-sm font-semibold">{movie.Title} ({movie.Year})</h2>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <h2 className="text-2xl font-semibold mb-4">Popular Movies</h2>
+                <Carousel
+                    swipeable={true}
+                    draggable={true}
+                    showDots={false}
+                    responsive={responsive}
+                    ssr={false} // means to render carousel on server-side.
+                    infinite={true}
+                    autoPlay={true}
+                    autoPlaySpeed={3000}
+                    keyBoardControl={true}
+                    customTransition="all .5s"
+                    transitionDuration={500}
+                    containerClass="carousel-container"
+                    removeArrowOnDeviceType={[]}
+                    dotListClass="custom-dot-list-style"
+                    itemClass="carousel-item-padding-40-px"
+                >
+                    {popularMovies?.map((movie, index) => (
+                        <div key={index} className="p-2">
+                            <img src={movie.poster} alt={movie.title} className="w-full h-auto rounded-md" />
+                            <h3 className="text-center mt-2">{movie.title}</h3>
+                            <h3 className="text-center mt-2">{movie.year}</h3>
+                        </div>
+                    ))}
+                </Carousel>
             </div>
 
-            {modalIsOpen && (
-                <div className="fixed inset-0 flex items-center justify-center z-50">
-                    <div className="modal modal-open">
-                            <MovieDetailCard movie={selectedMovie as Movie }closeModal={closeModal} />
+            {modalIsOpen && selectedMovie && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg p-4 max-w-lg w-full relative">
+                        <button className="absolute top-2 right-2 btn btn-sm btn-circle" onClick={closeModal}>✕</button>
+                        <MovieDetailCard movie={selectedMovie} closeModal={closeModal} />
                     </div>
                 </div>
             )}

@@ -1,8 +1,9 @@
 import axios from 'axios';
-import React, { useState, FormEvent, useContext } from 'react';
+import React, { useState, FormEvent, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { decodeToken } from '../utils/DecodeJwt';
 import { UserContext } from '../context/UserContext';
+import Cookies from 'js-cookie';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -11,6 +12,17 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
 
   const { setUsername: setUserNameInContext, setSub } = useContext(UserContext);
+
+  useEffect(() => {
+    const accessToken = Cookies.get('access_token');
+    if (accessToken) {
+      const userData = decodeToken(accessToken);
+      if (userData && userData.exp && userData.exp * 1000 > Date.now()) {
+        // User is already logged in, navigate to home page
+        navigate('/');
+      }
+    }
+  }, [navigate]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();

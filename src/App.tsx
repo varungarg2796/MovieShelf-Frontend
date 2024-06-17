@@ -10,6 +10,7 @@ import WatchList from './pages/WatchList';
 import WatchHistory from './pages/WatchHistory';
 import Recommendations from './pages/Recommendations';
 import AuthGuard from './guards/AuthGuard';
+import AboutPage from './pages/about';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/about" element={ <AboutPage />} />
           <Route path="/my-watch-list" element={<WatchList />} />
           <Route path="/my-watch-history" element={<WatchHistory />} />
             <Route path="/recommendations" element={<AuthGuard><Recommendations /> </AuthGuard>} />

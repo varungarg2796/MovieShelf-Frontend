@@ -1,8 +1,9 @@
-import React, { useState, FormEvent, useContext } from 'react';
+import React, { useState, FormEvent, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
 import { decodeToken } from '../utils/DecodeJwt';
+import Cookies from 'js-cookie';
 
 
 
@@ -14,7 +15,16 @@ const SignupPage: React.FC = () => {
 
   const { setUsername, setSub }: { setUsername: (username: string) => void; setSub: (sub: string) => void } = useContext(UserContext);
 
-  
+  useEffect(() => {
+    const accessToken = Cookies.get('access_token');
+    if (accessToken) {
+      const userData = decodeToken(accessToken);
+      if (userData && userData.exp && userData.exp * 1000 > Date.now()) {
+        // User is already logged in, navigate to home page
+        navigate('/');
+      }
+    }
+  }, [navigate]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
