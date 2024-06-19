@@ -75,10 +75,7 @@ const HomePage: React.FC = () => {
     );
     const fetchPopularMovies = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/movies`, {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
+            const response = await fetch(`http://localhost:3000/movies/top-rated`, {
             });
             if (!response.ok) {
                 throw new Error('Failed to fetch popular movies');
@@ -139,7 +136,7 @@ const HomePage: React.FC = () => {
                     )}
                 </div>
 
-                <h2 className="text-2xl font-semibold mb-4">Popular Movies</h2>
+                <h2 className="text-2xl font-semibold mb-4">Top Rated Movies</h2>
                 <Carousel
                     swipeable={true}
                     draggable={true}
@@ -169,32 +166,32 @@ const HomePage: React.FC = () => {
 
             <div className="stats stats-vertical lg:stats-horizontal shadow">
   
-  <div className="stat">
-    <div className="stat-title">Downloads</div>
-    <div className="stat-value">31K</div>
-    <div className="stat-desc">Jan 1st - Feb 1st</div>
-  </div>
-  
+                    <div className="stat">
+                        <div className="stat-title">Movies Watched</div>
+                        <div className="stat-value">0</div>
+                        <div className="stat-desc">movies that you have watched</div>
+                    </div>
+                    
 
-  <div className="stat">
-    <div className="stat-title">Downloads</div>
-    <div className="stat-value">31K</div>
-    <div className="stat-desc">Jan 1st - Feb 1st</div>
-  </div>
+                    <div className="stat">
+                        <div className="stat-title">Movies On Watchlist</div>
+                        <div className="stat-value">0</div>
+                        <div className="stat-desc">movies waiting for popcorn</div>
+                    </div>
 
-  <div className="stat">
-    <div className="stat-title">New Users</div>
-    <div className="stat-value">4,200</div>
-    <div className="stat-desc">↗︎ 400 (22%)</div>
-  </div>
-  
-  <div className="stat">
-    <div className="stat-title">New Registers</div>
-    <div className="stat-value">1,200</div>
-    <div className="stat-desc">↘︎ 90 (14%)</div>
-  </div>
-  
-</div>
+                    <div className="stat">
+                        <div className="stat-title">Binged Hours</div>
+                        <div className="stat-value">22</div>
+                        <div className="stat-desc">spent watching movies</div>
+                    </div>
+                    
+                    <div className="stat">
+                        <div className="stat-title">Hours of Potential Thrills</div>
+                        <div className="stat-value">0</div>
+                        <div className="stat-desc">potential watchlist hours</div>
+                    </div>
+                    
+            </div>
 
             {modalIsOpen && selectedMovie && (
                 <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
